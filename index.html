@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Happy Birthday!!!</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* --- CUSTOM FONT DECLARATION --- */
+    @font-face {
+      font-family: 'Rockybilly';
+      src: url('Rockybilly.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #fff;
+      position: relative;
+      padding: 20px 15px;
+      
+      /* ARTISTIC NATURE BACKGROUND IMAGE */
+      background-image: url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1200&auto=format&fit=crop'); 
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    /* Dark dimming layer over background image */
+    .bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(2, 6, 23, 0.45);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Mobile Audio Notification */
+    #musicHint {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      z-index: 100;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: pulseHint 2.5s infinite ease-in-out;
+      white-space: nowrap;
+    }
+
+    /* --- CARD: Static Liquid Glass --- */
+    .card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 36px;
+      padding: 2.5rem 1.8rem;
+      text-align: center;
+      width: 100%;
+      max-width: 380px; /* Mobile Baseline */
+      z-index: 10;
+      margin: auto;
+
+      backdrop-filter: blur(35px) saturate(160%);
+      -webkit-backdrop-filter: blur(35px) saturate(160%);
+      
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 
+        inset 0 0 20px rgba(255, 255, 255, 0.1),
+        0 30px 70px rgba(0, 0, 0, 0.5);
+      
+      overflow: hidden;
+    }
+
+    /* Fixed Glass Sheen Gradient */
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.02) 50%,
+        transparent 100%
+      );
+      pointer-events: none;
+    }
+
+    /* Responsive Width Breakpoints: 540px, 720px, 980px */
+    @media screen and (min-width: 540px) { .card { max-width: 460px; padding: 3rem 2.2rem; } }
+    @media screen and (min-width: 720px) { .card { max-width: 540px; padding: 3.5rem 2.8rem; } }
+    @media screen and (min-width: 980px) { .card { max-width: 620px; padding: 4rem 3.2rem; } }
+
+    /* Photo Frame (Rounded Square Liquid Glass Ring) */
+    .photo-wrapper {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 1.2rem auto;
+      z-index: 2;
+    }
+
+    .photo-frame {
+      width: 100%;
+      height: 100%;
+      border-radius: 28px;
+      padding: 4px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 24px;
+      border: 3px solid rgba(2, 6, 23, 0.6);
+    }
+
+    /* Typography */
+    .greeting-sub {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 0.2rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    /* --- ADJUSTED ROCKYBILLY FONT SIZING & SPACING --- */
+    .sister-name {
+      font-family: 'Rockybilly', cursive, sans-serif;
+      font-weight: normal;
+      color: #ffffff;
+      display: block;
+      font-size: 2.2rem; /* Reduced from 3.8rem to fit cleanly */
+      line-height: 1.3;  /* Better vertical breathing room */
+      margin-top: 0.2rem;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .message {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 2rem;
+      font-weight: 300;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    /* Glass Audio Button */
+    .audio-btn {
+      position: relative;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 16px 36px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border-radius: 50px;
+      cursor: pointer;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      width: 100%;
+      max-width: 260px;
+      z-index: 2;
+    }
+
+    .audio-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .audio-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Floating Balloons */
+    .balloon {
+      position: absolute;
+      bottom: -100px;
+      width: 32px;
+      height: 44px;
+      border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+      animation: floatUp 7s infinite linear;
+      z-index: 5;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+
+    .balloon::before {
+      content: "";
+      position: absolute;
+      bottom: -8px;
+      left: 15px;
+      width: 2px;
+      height: 10px;
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.85; }
+      100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
+    }
+
+    @keyframes pulseHint {
+      0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.03); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-overlay"></div>
+
+  <div id="musicHint">🎵 Tap screen for music</div>
+
+  <div class="card">
+    
+    <div class="photo-wrapper">
+      <div class="photo-frame">
+        <img src="sis.jpg" id="sisterPhoto" alt="Sister Photo" />
+      </div>    
+    </div>
+
+    <div class="greeting-sub">Happy Birthday!!!</div>
+    <span class="sister-name" id="nameText">Rittu</span>
+
+    <p class="message" id="messageText">
+      To the incredible artist who brings color to every moment! Wishing you a birthday as vivid, beautiful, and inspiring as your creations! 🎨✨
+    </p>
+
+    <button class="audio-btn" onclick="toggleAudio()" id="audioBtn">🎵 Pause Audio</button>
+  </div>
+
+  <audio id="bgMusic" loop preload="auto">
+    <source src="song.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    // Config Variables
+    const sisterName = "Rittu"; // <-- REPLACE WITH HER NAME
+    const photoURL = "sis.jpg"; // <-- REPLACE WITH HER PHOTO PATH
+
+    document.getElementById('nameText').textContent = sisterName;
+    document.getElementById('sisterPhoto').src = photoURL;
+
+    const audio = document.getElementById('bgMusic');
+    const audioBtn = document.getElementById('audioBtn');
+    const musicHint = document.getElementById('musicHint');
+
+    // Confetti Wave Trigger
+    function popConfetti() {
+      confetti({
+        particleCount: 40,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 }
+      });
+      confetti({
+        particleCount: 40,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 }
+      });
+    }
+
+    // Audio Playback
+    function playAudio() {
+      audio.play().then(() => {
+        musicHint.style.display = 'none';
+        audioBtn.textContent = '⏸️ Pause Audio';
+      }).catch(() => {
+        musicHint.style.display = 'block';
+        audioBtn.textContent = '🎵 Play Audio';
+      });
+    }
+
+    function toggleAudio() {
+      if (audio.paused) {
+        audio.play();
+        audioBtn.textContent = '⏸️ Pause Audio';
+        musicHint.style.display = 'none';
+      } else {
+        audio.pause();
+        audioBtn.textContent = '🎵 Play Audio';
+      }
+    }
+
+    // Balloon FX
+    const balloonColors = ['#10b981', '#c026d3', '#0ea5e9', '#fbbf24', '#ffffff'];
+    
+    function createBalloon() {
+      const balloon = document.createElement('div');
+      balloon.classList.add('balloon');
+      
+      balloon.style.left = Math.random() * 95 + 'vw';
+      balloon.style.backgroundColor = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+      balloon.style.animationDuration = (Math.random() * 3 + 5) + 's';
+      
+      document.body.appendChild(balloon);
+
+      setTimeout(() => {
+        balloon.remove();
+      }, 7500);
+    }
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      popConfetti();
+      setTimeout(popConfetti, 400);
+
+      setInterval(popConfetti, 6000);
+      setInterval(createBalloon, 450);
+
+      playAudio();
+    });
+
+    document.body.addEventListener('click', () => {
+      if (audio.paused && musicHint.style.display !== 'none') {
+        playAudio();
+      }
+    }, { once: true });
+  </script>
+</body>
+</html>
